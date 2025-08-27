@@ -18,6 +18,11 @@ const userSchema=new mongoose.Schema({
         required:true,
         trim:true,
     },
+    city:{
+        type:String,
+        required:true,
+        trim:true,
+    },
     bio:{
         type:String,
         default:'',
