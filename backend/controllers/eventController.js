@@ -29,3 +29,22 @@ exports.createEvent=async (req, res)=>{
 
     }
 };
+
+
+// @route   GET /api/events
+// @desc    Get all events
+// @access  Public
+exports.getEvents=async(req, res)=>{
+    try{
+        const events=await Event.find()
+            .populate('host', 'name city email')
+            .sort({date:1});
+        
+        res.json(events);
+
+    }
+    catch(err){
+        console.error(err.message);
+        res.status(500).send('Server Error');
+    }
+}
