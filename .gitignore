@@ -1,0 +1,9 @@
+# Node.js dependencies
+/backend/node_modules
+/frontend/node_modules
+
+# Environment variables
+.env
+
+# Other files to ignore
+.DS_Store
