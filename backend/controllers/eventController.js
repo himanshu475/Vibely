@@ -36,7 +36,19 @@ exports.createEvent=async (req, res)=>{
 // @access  Public
 exports.getEvents=async(req, res)=>{
     try{
-        const events=await Event.find()
+
+        const {city, category}=req.query;
+        let filter={};
+
+        if(city){
+            filter.city=new RegExp(city, 'i');
+        }
+
+        if(category){
+            filter.category=new RegExp(category, 'i');
+        }
+
+        const events=await Event.find(filter)
             .populate('host', 'name city email')
             .sort({date:1});
         
