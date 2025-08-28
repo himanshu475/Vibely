@@ -72,3 +72,90 @@ exports.getEvents=async(req, res)=>{
         res.status(500).send('Server Error');
     }
 }
+
+
+// @route   POST /api/events/:id/requests
+// @desc    Send a join request to an event
+// @access  Private
+exports.sendJoinRequests=async(req, res)=>{
+    try{
+        const event=await Event.findById(req.params.id);
+
+        if(!event){
+            return res.status(404).json({msg:'Event not found'});
+        }
+
+        if(event.participants.includes(req.user.id)){
+            return res.status(400).json({msg:'you are already a participant of this event'});
+        }
+
+        if(event.joinRequests.includes(req.user.id)){
+            return res.status(400).json({msg:"You have already send a join request to this event"});
+        }
+
+        event.joinRequests.push(req.user.id);
+        await event.save();
+
+        res.json({msg:"Join request send successfully"});
+    }
+    catch(err){
+        console.error(err.message);
+        res.status(500).send('Server Error');
+    }
+};
+
+
+// @route   PUT /api/events/:id/requests/:userId
+// @desc    Accept or decline a join request
+// @access  Private (Host Only)
+exports.manageJoinRequest=async(req, res)=>{
+    try{
+        const event=await Event.findById(req.params.id);
+
+        if(!event){
+            return res.status(404).json({msg:"Event not found"});
+        }
+
+        if(event.host.toString()!==req.user.id){
+            return res.status(401).json({msg:"User is not authorized to manage this event"});
+        }
+
+        const {action}=req.body;
+        const userId=req.params.userId;
+
+        const requestIndex=event.joinRequests.indexOf(userId);
+
+        if(requestIndex===-1){
+            return res.status(404).json({msg:"Join request not found"});
+        }
+
+        if(action==='accept'){
+            if(event.participants.length>=event.participantLimit){
+                return res.status(400).json({msg:'Event is already full'});
+            }
+            
+            event.participants.push(userId);
+            event.joinRequests.splice(requestIndex, 1);
+
+            res.json({msg: 'Join request accepted'});
+        }
+        else if(action==='decline'){
+            event.joinRequests.splice(requestIndex, 1);
+            res.json({msg:"join request declined"});
+        
+        }
+        else{
+            return res.status(400).json({ msg: 'Invalid action. Must be "accept" or "decline"' });
+        }
+
+    await event.save();
+
+
+
+    }
+    catch(err){
+        console.log(err.message);
+        res.status(500).send('Server Error');
+    }
+   
+};

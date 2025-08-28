@@ -1,6 +1,6 @@
 const express=require('express');
 const router=express.Router();
-const {createEvent, getEvents}=require('../controllers/eventController');
+const {createEvent, getEvents, sendJoinRequests, manageJoinRequest}=require('../controllers/eventController');
 const auth=require('../middleware/authMiddleware');
 
 // @route   POST /api/events
@@ -13,5 +13,15 @@ router.post('/', auth, createEvent);
 // @access  Public
 router.get('/', getEvents);
 
+
+// @route   POST /api/events/:id/requests
+// @desc    Send a join request to an event
+// @access  Private
+router.post('/:id/requests', auth, sendJoinRequests);
+
+// @route   PUT /api/events/:id/requests/:userId
+// @desc    Accept or decline a join request
+// @access  Private (Host Only)
+router.put('/:id/requests/:userId', auth, manageJoinRequest);
 
 module.exports=router;
