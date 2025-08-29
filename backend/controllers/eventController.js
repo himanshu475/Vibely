@@ -182,3 +182,29 @@ exports.getEventById=async(req, res)=>{
         res.status(500).send('Server Error');
     }
 }
+
+
+// @route   DELETE /api/events/:id
+// @desc    Delete an event
+// @access  Private (Host Only)
+exports.deleteEvent=async(req, res)=>{
+    try{
+        const event=await Event.findById(req.params.id);
+
+        if(!event){
+            return res.status(404).json({msg:"Event not found"});
+        }
+
+        if(event.host.toString()!==req.user.id){
+            return res.status(401).json({msg:"User is not authorized to delete this event"});
+        }
+
+        await event.deleteOne();
+
+        res.json({msg:"Event removed"});
+    }
+    catch(err){
+        console.error(err.message);
+        res.status(500).send('Server Error');
+    }
+}
