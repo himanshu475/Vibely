@@ -1,6 +1,6 @@
 const express=require('express');
 const router=express.Router();
-const {createEvent, getEvents, sendJoinRequests, manageJoinRequest, getEventById}=require('../controllers/eventController');
+const {createEvent, getEvents, sendJoinRequests, manageJoinRequest, getEventById, deleteEvent}=require('../controllers/eventController');
 const auth=require('../middleware/authMiddleware');
 
 // @route   POST /api/events
@@ -28,5 +28,11 @@ router.put('/:id/requests/:userId', auth, manageJoinRequest);
 // @desc    Get a single event by ID
 // @access  Public
 router.get('/:id', getEventById);
+
+// @route   DELETE /api/events/:id
+// @desc    Delete an event
+// @access  Private (Host Only)
+router.delete('/:id', auth, deleteEvent);
+
 
 module.exports=router;
