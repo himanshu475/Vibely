@@ -159,3 +159,26 @@ exports.manageJoinRequest=async(req, res)=>{
     }
    
 };
+
+
+// @route   GET /api/events/:id
+// @desc    Get a single event by ID
+// @access  Public
+exports.getEventById=async(req, res)=>{
+    try{
+        const event=await Event.findById(req.params.id)
+            .populate('host', 'name email city')
+            .populate('participants', 'name email city')
+            .populate('joinRequests', 'name email city');
+        
+        if(!event){
+            return res.status(404).json({msg:"Event not found"});
+        }
+
+        res.json(event);
+    }
+    catch(err){
+        console.error(err.message);
+        res.status(500).send('Server Error');
+    }
+}
