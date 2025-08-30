@@ -208,3 +208,69 @@ exports.deleteEvent=async(req, res)=>{
         res.status(500).send('Server Error');
     }
 }
+
+
+// @route   PUT /api/events/:id
+// @desc    Update an event
+// @access  Private (Host Only)
+exports.patchEvent=async (req, res) => {
+    try{
+        const {title, description, category, city, date, participantLimit, tags}=req.body;
+
+        let event=await Event.findById(req.params.id);
+
+        if(!event){
+            return res.status(404).json({msg:"Event not found"});
+        }
+
+        if(event.host.toString()!==req.user.id){
+            return res.status(401).json({msg:"User is not authorized to update this event"});
+        }
+
+        if (title) event.title = title;
+        if (description) event.description = description;
+        if (category) event.category = category;
+        if (city) event.city = city;
+        if (date) event.date = date;
+        if (participantLimit) event.participantLimit = participantLimit;
+        if (tags) event.tags = tags;
+
+        await event.save();
+
+        res.json(event);
+    }
+    catch(err){
+        console.error(err.message);
+        res.status(500).send('Server Error');
+    }
+    
+}
+
+// @route   PUT /api/events/:id/leave
+// @desc    Allow a user to leave an event
+// @access  Private
+exports.leaveEvent=async(req, res)=>{
+    try{
+        const event=await Event.findById(req.params.id);
+
+        if(!event){
+            return res.status(404).json({msg:"Event not found"});
+        }
+
+        const userId=req.user.id;
+
+        if(!event.participants.includes(userId)){
+            return res.status(400).json({msg:"You are not a participant of this event"});
+        }
+
+        const userIndex=event.participants.indexOf(userId);
+        event.participants.splice(userIndex, 1);
+        await event.save();
+
+        res.json({msg:"you have left the event"});
+    }
+    catch(err){
+        console.error(err.message);
+        res.status(500).send("Server Error");
+    }
+}
