@@ -3,9 +3,12 @@ const express=require('express');
 const mongoose=require('mongoose');
 const authRoutes=require('./routes/auth');
 const eventRoutes=require('./routes/events');
-
+const cors=require('cors');
 
 const app=express();
+
+
+app.use(cors());
 
 app.use(express.json());
 
