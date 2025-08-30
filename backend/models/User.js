@@ -11,19 +11,18 @@ const userSchema=new mongoose.Schema({
         required:true,
         unique:true,
         lowercase:true,
-        trime:true,
+        trim:true,
     },
     password:{
         type:String,
         required:true,
         trim:true,
     },
-
     city: {
-    type: String,
-    required: false, 
-    trim: true,
-  },
+        type: String,
+        required: false,
+        trim: true,
+    },
     bio:{
         type:String,
         default:'',
@@ -46,5 +45,3 @@ const userSchema=new mongoose.Schema({
 const User=mongoose.model('User', userSchema);
 
 module.exports=User;
-
-
