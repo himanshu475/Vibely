@@ -1,12 +1,13 @@
 import React from 'react';
 import Register from './components/Register';
 import AuthModal from './components/AuthModal';
+import { UserProvider } from './context/UserContext';
 
 const App = () => {
   return (
-    <div className="bg-gray-200 text-center p-8">
+    <UserProvider>
       <AuthModal/>
-    </div>
+    </UserProvider>
   );
 };
 
