@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { Mail, Lock, User } from 'lucide-react';
 import { registerUser } from '../services/api';
+import { UserContext } from '../context/UserContext';
 
-const Register = ({ onSwitch }) => {
+const Register = () => {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -11,6 +12,7 @@ const Register = ({ onSwitch }) => {
   });
 
   const { name, email, password, confirmPassword } = formData;
+  const {setToken}=useContext(UserContext);
 
   const handleInputChange = (e) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -23,6 +25,9 @@ const Register = ({ onSwitch }) => {
     }
     try {
       const res = await registerUser(formData);
+
+      setToken(res.token);
+      localStorage.setItem('token', res.token);
       console.log('Registration successful:', res);
     } catch (err) {
       console.error('Registration failed:', err.response.data);

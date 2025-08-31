@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { Mail, Lock, Eye, EyeOff } from 'lucide-react';
 import { loginUser } from '../services/api';
+import { UserContext } from '../context/UserContext';
 
-const Login = ({ onSwitch }) => {
+const Login = () => {
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -10,6 +11,7 @@ const Login = ({ onSwitch }) => {
   const [showPassword, setShowPassword] = useState(false);
 
   const { email, password } = formData;
+  const {setToken}=useContext(UserContext); 
 
   const handleInputChange = (e) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -18,6 +20,8 @@ const Login = ({ onSwitch }) => {
     e.preventDefault();
     try {
       const res = await loginUser(formData);
+      setToken(res.token);
+      localStorage.setItem('token', res.token );
       console.log('Login successful:', res);
     } catch (err) {
       console.error('Login failed:', err.response.data);
