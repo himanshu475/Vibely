@@ -1,6 +1,6 @@
 const express=require('express');
 const router=express.Router();
-const {registerUser, loginUser}=require('../controllers/authController');
+const {registerUser, loginUser, updateProfile}=require('../controllers/authController');
 const auth=require('../middleware/authMiddleware');
 const User=require('../models/User');
 
@@ -29,5 +29,10 @@ router.get('/me', auth, async(req, res)=>{
         res.status(500).send('Server Error');
     }
 })
+
+// @route   PATCH /api/auth/profile
+// @desc    Update user profile details
+// @access  Private
+router.patch('/profile', auth, updateProfile);
 
 module.exports=router;
