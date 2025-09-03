@@ -91,3 +91,31 @@ exports.loginUser=async (req, res) => {
     }
     
 }
+
+// @route   PATCH /api/auth/profile
+// @desc    Update user profile details
+// @access  Private
+exports.updateProfile=async (req, res)=>{
+    try{
+        const {bio, hobbies, city}=req.body;
+        const userId=req.user.id;
+
+        const user=await User.findById(userId);
+
+        if(!user){
+            return res.status(404).json({msg:"User not found"});
+        }
+
+        if(bio)user.bio=bio;
+        if(hobbies)user.hobbies=hobbies;
+        if(city)user.city=city;
+
+        await user.save();
+
+        res.json(user);
+    }
+    catch(err){
+        console.error(err.message);
+        res.status(500).send("Server Error");
+    }
+};

@@ -3,7 +3,7 @@ import React, {createContext, useState, useEffect, Children} from "react";
 
 export const UserContext=createContext();
 
-export const UserProvider=({Children})=>{
+export const UserProvider=({children})=>{
     const [token, setToken]=useState(localStorage.getItem('token') || null);
 
     const [user, setUser]=useState(null);
@@ -23,7 +23,7 @@ export const UserProvider=({Children})=>{
 
     return (
         <UserContext.Provider value={authContext}>
-            {Children}
+            {children}
         </UserContext.Provider>
     )
 
