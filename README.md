@@ -30,7 +30,16 @@
 - **Tailwind CSS**: A utility-first CSS framework for rapid styling.  
 - **React Router Dom**: For handling client-side routing and navigation.  
 - **Axios**: For making API requests to the backend.  
-- **Context API**: For global state management of user authentication.  
+- **Context API**: For global state management of user authentication.
+
+### 📅 Next Steps & Future Features
+
+This project is a work in progress, with the following features planned:
+
+- **Real-time Event Chat**: Implementing Socket.IO for real-time chat rooms for event participants.  
+- **AI-based Suggestions**: Recommending events and hobby buddies with similar interests.  
+- **User Profiles & Connections**: Adding a public-facing user profile page and a system for making connections.  
+- **Google Calendar Integration**: Syncing events with a user's Google Calendar.  
 
 ---
 
@@ -61,12 +70,5 @@ npm install
 npm run dev
 
 
-## 📅 Next Steps & Future Features
 
-This project is a work in progress, with the following features planned:
-
-- **Real-time Event Chat**: Implementing Socket.IO for real-time chat rooms for event participants.  
-- **AI-based Suggestions**: Recommending events and hobby buddies with similar interests.  
-- **User Profiles & Connections**: Adding a public-facing user profile page and a system for making connections.  
-- **Google Calendar Integration**: Syncing events with a user's Google Calendar.  
 
