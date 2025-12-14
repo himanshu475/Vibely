@@ -36,8 +36,7 @@
 
 This project is a work in progress, with the following features planned:
 
-- **Real-time Event Chat**: Implementing Socket.IO for real-time chat rooms for event participants.  
-- **AI-based Suggestions**: Recommending events and hobby buddies with similar interests.  
+- **Real-time Event Chat**: Implementing Socket.IO for real-time chat rooms for event participants.   
 - **User Profiles & Connections**: Adding a public-facing user profile page and a system for making connections.  
 - **Google Calendar Integration**: Syncing events with a user's Google Calendar.  
 
