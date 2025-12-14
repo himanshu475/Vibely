@@ -1,13 +1,21 @@
 import React, { useState, useContext, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { User, Mail, MapPin, Edit3, Save, X, Camera, Heart, Star } from 'lucide-react';
 import { UserContext } from '../context/UserContext';
 import { updateUserProfile } from '../services/api';
+import { getJoinRequests, acceptJoinRequest, getMyEvents } from '../services/api';
 
 const ProfilePage = () => {
-    const { user, token, setUser } = useContext(UserContext);
+    const { user, token, setUser, setToken } = useContext(UserContext);
+    const navigate = useNavigate();
     const [isEditing, setIsEditing] = useState(false);
     const [customHobby, setCustomHobby] = useState('');
     const [editData, setEditData] = useState({});
+    const [joinRequests, setJoinRequests] = useState([]);
+    const [loadingRequests, setLoadingRequests] = useState(false);
+    const [requestsError, setRequestsError] = useState('');
+    const [myEvents, setMyEvents] = useState({ hosted: [], participating: [] });
+    const [loadingMyEvents, setLoadingMyEvents] = useState(false);
 
     useEffect(() => {
         if (user) {
@@ -20,6 +28,40 @@ const ProfilePage = () => {
             });
         }
     }, [user]);
+
+    useEffect(() => {
+        const loadRequests = async () => {
+            if (!token) return;
+            setLoadingRequests(true);
+            setRequestsError('');
+            try {
+                const eventsWithRequests = await getJoinRequests(token);
+                setJoinRequests(eventsWithRequests);
+            } catch (err) {
+                console.error('Failed to load join requests:', err);
+                setRequestsError(err?.msg || 'Failed to load join requests');
+            } finally {
+                setLoadingRequests(false);
+            }
+        };
+        loadRequests();
+    }, [token]);
+
+    useEffect(() => {
+        const loadMyEvents = async () => {
+            if (!token) return;
+            setLoadingMyEvents(true);
+            try {
+                const data = await getMyEvents(token);
+                setMyEvents(data);
+            } catch (err) {
+                console.error('Failed to load my events:', err);
+            } finally {
+                setLoadingMyEvents(false);
+            }
+        };
+        loadMyEvents();
+    }, [token]);
 
     const handleInputChange = (e) => {
         setEditData({
@@ -74,6 +116,28 @@ const ProfilePage = () => {
         }
     };
 
+    const handleLogout = () => {
+        setToken(null);
+        setUser(null);
+        localStorage.removeItem('token');
+        navigate('/');
+    };
+
+    const handleAcceptRequest = async (eventId, requestUserId) => {
+        if (!token) return;
+        try {
+            const updatedEvent = await acceptJoinRequest(eventId, requestUserId, token);
+            setJoinRequests((prev) =>
+                prev
+                    .map((event) => (event._id === updatedEvent._id ? updatedEvent : event))
+                    .filter((event) => event.joinRequests && event.joinRequests.length > 0)
+            );
+        } catch (err) {
+            console.error('Failed to accept join request:', err);
+            setRequestsError(err?.msg || 'Failed to accept join request');
+        }
+    };
+
     const handleCancel = () => {
         setEditData({
             name: user.name || '',
@@ -93,6 +157,15 @@ const ProfilePage = () => {
 
     if (!user) return <div>Loading...</div>;
 
+    const now = new Date();
+    const upcomingParticipating = myEvents.participating.filter(
+        (event) => event.date && new Date(event.date) >= now
+    );
+    const pastParticipating = myEvents.participating.filter(
+        (event) => event.date && new Date(event.date) < now
+    );
+    const hostedEvents = myEvents.hosted || [];
+
     return (
         <div className="container mx-auto p-4 md:p-8">
             <div className="bg-white rounded-3xl shadow-2xl w-full max-w-4xl mx-auto my-8">
@@ -106,7 +179,7 @@ const ProfilePage = () => {
                                 <Camera className="w-4 h-4 text-gray-600" />
                             </button>
                         </div>
-                        <div className="flex items-center justify-center space-x-3">
+                        <div className="flex items-center justify-center space-x-3 mb-4">
                             <h2 className="text-3xl font-bold text-gray-900">
                                 {isEditing ? 'Edit Profile' : 'My Profile'}
                             </h2>
@@ -119,6 +192,12 @@ const ProfilePage = () => {
                                 </button>
                             )}
                         </div>
+                        <button
+                            onClick={handleLogout}
+                            className="inline-flex items-center px-4 py-2 bg-gray-100 text-gray-700 rounded-full text-sm font-medium hover:bg-gray-200 transition-colors duration-200"
+                        >
+                            Log out
+                        </button>
                     </div>
 
                     <div className="space-y-6">
@@ -313,13 +392,13 @@ const ProfilePage = () => {
                     <div className="grid grid-cols-3 gap-4 mt-8 pt-6 border-t border-gray-100">
                         <div className="text-center">
                             <div className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-                                0
+                                {pastParticipating.length}
                             </div>
                             <div className="text-gray-600 text-sm">Events Attended</div>
                         </div>
                         <div className="text-center">
                             <div className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-teal-600 bg-clip-text text-transparent">
-                                0
+                                {hostedEvents.length}
                             </div>
                             <div className="text-gray-600 text-sm">Events Created</div>
                         </div>
@@ -329,6 +408,146 @@ const ProfilePage = () => {
                             </div>
                             <div className="text-gray-600 text-sm">Connections</div>
                         </div>
+                    </div>
+
+                    <div className="mt-10 pt-6 border-t border-gray-100">
+                        <h3 className="text-xl font-semibold text-gray-900 mb-4">
+                            My events
+                        </h3>
+                        {loadingMyEvents ? (
+                            <div className="text-gray-500 text-sm">Loading your events...</div>
+                        ) : (
+                            <div className="grid md:grid-cols-2 gap-6">
+                                <div>
+                                    <h4 className="text-sm font-semibold text-gray-700 mb-2">
+                                        Upcoming accepted events
+                                    </h4>
+                                    {upcomingParticipating.length === 0 ? (
+                                        <div className="text-gray-500 text-xs">
+                                            No upcoming events yet.
+                                        </div>
+                                    ) : (
+                                        <div className="space-y-3">
+                                            {upcomingParticipating.map((event) => (
+                                                <div
+                                                    key={event._id}
+                                                    className="bg-gray-50 border border-gray-100 rounded-xl px-4 py-3 text-xs text-gray-700"
+                                                >
+                                                    <div className="font-semibold text-gray-900">
+                                                        {event.title}
+                                                    </div>
+                                                    <div className="text-gray-500">
+                                                        {event.city} ·{' '}
+                                                        {event.date
+                                                            ? new Date(event.date).toLocaleString()
+                                                            : 'TBD'}
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
+                                <div>
+                                    <h4 className="text-sm font-semibold text-gray-700 mb-2">
+                                        Past events attended
+                                    </h4>
+                                    {pastParticipating.length === 0 ? (
+                                        <div className="text-gray-500 text-xs">
+                                            You haven&apos;t attended any events yet.
+                                        </div>
+                                    ) : (
+                                        <div className="space-y-3">
+                                            {pastParticipating.map((event) => (
+                                                <div
+                                                    key={event._id}
+                                                    className="bg-gray-50 border border-gray-100 rounded-xl px-4 py-3 text-xs text-gray-700"
+                                                >
+                                                    <div className="font-semibold text-gray-900">
+                                                        {event.title}
+                                                    </div>
+                                                    <div className="text-gray-500">
+                                                        {event.city} ·{' '}
+                                                        {event.date
+                                                            ? new Date(event.date).toLocaleString()
+                                                            : 'TBD'}
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        )}
+                    </div>
+
+                    <div className="mt-10 pt-6 border-t border-gray-100">
+                        <h3 className="text-xl font-semibold text-gray-900 mb-4">
+                            Join requests for your events
+                        </h3>
+                        {requestsError && (
+                            <div className="mb-3 bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-2 rounded-xl">
+                                {requestsError}
+                            </div>
+                        )}
+                        {loadingRequests ? (
+                            <div className="text-gray-500 text-sm">
+                                Loading join requests...
+                            </div>
+                        ) : joinRequests.length === 0 ? (
+                            <div className="text-gray-500 text-sm">
+                                You currently have no pending join requests.
+                            </div>
+                        ) : (
+                            <div className="space-y-4">
+                                {joinRequests.map((event) => (
+                                    <div
+                                        key={event._id}
+                                        className="border border-gray-100 rounded-2xl p-4 bg-gray-50"
+                                    >
+                                        <div className="flex justify-between items-center mb-2">
+                                            <div>
+                                                <div className="text-sm text-gray-500">
+                                                    Event
+                                                </div>
+                                                <div className="font-semibold text-gray-900">
+                                                    {event.title}
+                                                </div>
+                                            </div>
+                                            <div className="text-xs text-gray-500">
+                                                {event.city}
+                                            </div>
+                                        </div>
+                                        <div className="space-y-2 mt-3">
+                                            {event.joinRequests.map((reqUser) => (
+                                                <div
+                                                    key={reqUser._id}
+                                                    className="flex items-center justify-between bg-white rounded-xl px-3 py-2 shadow-sm"
+                                                >
+                                                    <div>
+                                                        <div className="text-sm font-medium text-gray-900">
+                                                            {reqUser.name}
+                                                        </div>
+                                                        <div className="text-xs text-gray-500">
+                                                            {reqUser.email}
+                                                            {reqUser.city && ` · ${reqUser.city}`}
+                                                        </div>
+                                                    </div>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() =>
+                                                            handleAcceptRequest(event._id, reqUser._id)
+                                                        }
+                                                        className="text-xs font-semibold px-3 py-1.5 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:from-purple-600 hover:to-pink-600 transition-colors duration-200"
+                                                    >
+                                                        Accept
+                                                    </button>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>

@@ -70,7 +70,7 @@ exports.loginUser=async (req, res) => {
 
         const payload={
             user:{
-                id:user.id,
+                id:user.id, 
             },
         };
 
