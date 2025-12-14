@@ -2,7 +2,7 @@ import axios from "axios";
 // import { fromJSON } from "postcss";
 
 const api = axios.create({
-    baseURL: 'http://localhost:5000/api',
+    baseURL: 'https://vibely-2k9m.onrender.com/',
 });
 
 
