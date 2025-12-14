@@ -1,11 +1,12 @@
 import React, { useState, useContext } from 'react';
-import { NavLink } from 'react-router-dom';
-import { Menu, X, Zap, User } from 'lucide-react';
+import { NavLink, useNavigate } from 'react-router-dom';
+import { Menu, X, Zap, User, Plus } from 'lucide-react';
 import { UserContext } from '../context/UserContext';
 
 const Header = ({ onAuthClick, onProfileClick }) => {
   const { user } = useContext(UserContext);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const navigate = useNavigate();
 
   return (
     <header className="bg-white/95 backdrop-blur-sm border-b border-gray-100 sticky top-0 z-50">
@@ -26,21 +27,35 @@ const Header = ({ onAuthClick, onProfileClick }) => {
           <NavLink to="/" className="text-gray-700 hover:text-purple-600 font-medium transition-colors duration-200">
             Home
           </NavLink>
-          <NavLink to="/profile" className="text-gray-700 hover:text-purple-600 font-medium transition-colors duration-200">
-            Profile
+          <NavLink to="/events" className="text-gray-700 hover:text-purple-600 font-medium transition-colors duration-200">
+            Events
           </NavLink>
+          {user && (
+            <NavLink to="/profile" className="text-gray-700 hover:text-purple-600 font-medium transition-colors duration-200">
+              Profile
+            </NavLink>
+          )}
         </nav>
 
-        {/* Sign In Button */}
+        {/* Auth / Profile Actions - Desktop */}
         <div className="hidden md:flex items-center space-x-4">
           {user ? (
-            <button 
-              onClick={onProfileClick}
-              className="flex items-center space-x-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white px-6 py-2 rounded-full font-medium hover:from-purple-600 hover:to-pink-600 transform hover:scale-105 transition-all duration-200 shadow-lg hover:shadow-xl"
-            >
-              <User className="w-4 h-4" />
-              <span>{user.name}</span>
-            </button>
+            <>
+              <button
+                onClick={() => navigate('/events/new')}
+                className="flex items-center space-x-2 px-4 py-2 rounded-full border border-purple-200 text-purple-600 font-medium hover:bg-purple-50 transition-all duration-200"
+              >
+                <Plus className="w-4 h-4" />
+                <span>Create event</span>
+              </button>
+              <button 
+                onClick={onProfileClick}
+                className="flex items-center space-x-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white px-5 py-2 rounded-full font-medium hover:from-purple-600 hover:to-pink-600 transform hover:scale-105 transition-all duration-200 shadow-lg hover:shadow-xl"
+              >
+                <User className="w-4 h-4" />
+                <span>{user.name}</span>
+              </button>
+            </>
           ) : (
             <button 
               onClick={onAuthClick}
@@ -68,25 +83,39 @@ const Header = ({ onAuthClick, onProfileClick }) => {
             <NavLink to="/" className="text-gray-700 hover:text-purple-600 font-medium">
               Home
             </NavLink>
-            <NavLink to="/profile" className="text-gray-700 hover:text-purple-600 font-medium">
-              Profile
+            <NavLink to="/events" className="text-gray-700 hover:text-purple-600 font-medium">
+              Events
             </NavLink>
+            {user && (
+              <NavLink to="/profile" className="text-gray-700 hover:text-purple-600 font-medium">
+                Profile
+              </NavLink>
+            )}
             {user ? (
+              <>
+                <button
+                  onClick={() => navigate('/events/new')}
+                  className="mt-4 w-full flex items-center justify-center space-x-2 px-6 py-2 rounded-full border border-purple-200 text-purple-600 font-medium hover:bg-purple-50 transition-all duration-200"
+                >
+                  <Plus className="w-4 h-4" />
+                  <span>Create event</span>
+                </button>
                 <button 
                   onClick={onProfileClick}
-                  className="flex items-center justify-center space-x-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white px-6 py-2 rounded-full font-medium mt-4 w-full hover:from-purple-600 hover:to-pink-600 transition-all duration-200"
+                  className="flex items-center justify-center space-x-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white px-6 py-2 rounded-full font-medium mt-3 w-full hover:from-purple-600 hover:to-pink-600 transition-all duration-200"
                 >
                   <User className="w-4 h-4" />
                   <span>{user.name}</span>
                 </button>
-              ) : (
-                <button 
-                  onClick={onAuthClick}
-                  className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-6 py-2 rounded-full font-medium mt-4 w-full hover:from-purple-600 hover:to-pink-600 transition-all duration-200"
-                >
-                  Sign In / Join
-                </button>
-              )}
+              </>
+            ) : (
+              <button 
+                onClick={onAuthClick}
+                className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-6 py-2 rounded-full font-medium mt-4 w-full hover:from-purple-600 hover:to-pink-600 transition-all duration-200"
+              >
+                Sign In / Join
+              </button>
+            )}
           </nav>
         </div>
       )}

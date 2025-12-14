@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { X } from 'lucide-react';
 import Login from './Login';
 import Register from './Register';
 
@@ -13,10 +14,22 @@ const AuthModal = ({isOpen, onClose}) => {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       {/* Backdrop */}
-      <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
+      <div
+        className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+        onClick={onClose}
+      />
       
       {/* Modal Content */}
       <div className="relative bg-white rounded-3xl shadow-2xl w-full max-w-md transform transition-all duration-300 scale-100 p-7">
+        {/* Close button */}
+        <button
+          type="button"
+          onClick={onClose}
+          className="absolute right-4 top-4 text-gray-400 hover:text-gray-600 transition-colors duration-150"
+          aria-label="Close"
+        >
+          <X className="w-5 h-5" />
+        </button>
         <div className="text-center mb-8">
           <h2 className="text-3xl font-bold text-purple-600 mb-2">
             {isLogin ? 'Welcome Back' : 'Join Vibely'}

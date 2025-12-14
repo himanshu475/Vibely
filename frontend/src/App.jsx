@@ -4,8 +4,12 @@ import { UserProvider, UserContext } from './context/UserContext';
 import { getUserProfile } from './services/api';
 import AuthModal from './components/AuthModal';
 import Header from './components/Header';
+import Footer from './components/Footer';
 import ProfilePage from './components/ProfilePage';
 import ProfileSetup from './components/ProfileSetup';
+import EventFeed from './components/EventFeed';
+import Home from './components/Home';
+import CreateEvent from './components/CreateEvent';
 
 // The main application component with all of our routing logic
 const App = () => {
@@ -33,17 +37,32 @@ const App = () => {
     fetchUser();
   }, [token, navigate, setUser]);
 
+  const handleLogout = () => {
+    setToken(null);
+    setUser(null);
+    localStorage.removeItem('token');
+    navigate('/');
+  };
+
+  const handleProfileClick = () => {
+    navigate('/profile');
+  };
+
   return (
     <>
       <Header
         onAuthClick={() => setIsAuthModalOpen(true)}
+        onProfileClick={handleProfileClick}
       />
       <Routes>
-        <Route path="/" element={<h1>Home Page</h1>} />
+        <Route path="/" element={<Home />} />
+        <Route path="/events" element={<EventFeed />} />
+        <Route path="/events/new" element={user ? <CreateEvent /> : <Navigate to="/" />} />
         <Route path="/profile" element={user ? <ProfilePage /> : <Navigate to="/" />} />
         <Route path="/onboarding" element={<ProfileSetup />} />
         <Route path="*" element={<h1>404 Not Found</h1>} />
       </Routes>
+      <Footer />
       <AuthModal
         isOpen={isAuthModalOpen && !user}
         onClose={() => setIsAuthModalOpen(false)}
