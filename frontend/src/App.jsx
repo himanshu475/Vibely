@@ -10,6 +10,7 @@ import ProfileSetup from './components/ProfileSetup';
 import EventFeed from './components/EventFeed';
 import Home from './components/Home';
 import CreateEvent from './components/CreateEvent';
+import EventDetails from './components/EventDetails';
 
 // The main application component with all of our routing logic
 const App = () => {
@@ -60,6 +61,7 @@ const App = () => {
         <Route path="/events/new" element={user ? <CreateEvent /> : <Navigate to="/" />} />
         <Route path="/profile" element={user ? <ProfilePage /> : <Navigate to="/" />} />
         <Route path="/onboarding" element={<ProfileSetup />} />
+        <Route path="/events/:id" element={<EventDetails/>}/>
         <Route path="*" element={<h1>404 Not Found</h1>} />
       </Routes>
       <Footer />
