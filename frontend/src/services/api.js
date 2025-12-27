@@ -151,6 +151,7 @@ export const getMyEvents = async (token) => {
     const res = await api.get('/events/me', {
       headers: {
         'x-auth-token': token,
+
       },
     });
     return res.data;
@@ -158,3 +159,16 @@ export const getMyEvents = async (token) => {
     throw handleApiError(err);
   }
 };
+
+
+//Get a single event by ID
+export const getEventById=async(id)=>{
+  try{
+    const res=await api.get(`/events/${id}`);
+    return res.data;
+
+  }
+  catch(err){
+    throw handleApiError(err);
+  }
+}
