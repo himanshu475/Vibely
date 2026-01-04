@@ -4,13 +4,17 @@ const mongoose=require('mongoose');
 const authRoutes=require('./routes/auth');
 const eventRoutes=require('./routes/events');
 const cors=require('cors');
+const { globalLimiter, authLimiter }=require('./middleware/limiter.js');
 
 const app=express();
 
 
 app.use(cors());
-
 app.use(express.json());
+
+//security middlewars
+app.use('/api/', globalLimiter);
+app.use('/api/auth', authLimiter);
 
 
 //Routes

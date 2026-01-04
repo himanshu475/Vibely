@@ -61,7 +61,7 @@ const App = () => {
         <Route path="/events/new" element={user ? <CreateEvent /> : <Navigate to="/" />} />
         <Route path="/profile" element={user ? <ProfilePage /> : <Navigate to="/" />} />
         <Route path="/onboarding" element={<ProfileSetup />} />
-        <Route path="/events/:id" element={<EventDetails/>}/>
+        <Route path="/events/:id" element={<EventDetails/>}/> 
         <Route path="*" element={<h1>404 Not Found</h1>} />
       </Routes>
       <Footer />
