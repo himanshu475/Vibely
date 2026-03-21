@@ -7,3 +7,10 @@
 
 # Other files to ignore
 .DS_Store
+
+# Internal Developer Documentation
+feature_debouncing.md
+feature_redis_caching.md
+interview_questions.md
+project_documentation.md
+resume_bullets.md

@@ -11,6 +11,7 @@ import EventFeed from './components/EventFeed';
 import Home from './components/Home';
 import CreateEvent from './components/CreateEvent';
 import EventDetails from './components/EventDetails';
+import About from './components/About';
 
 // The main application component with all of our routing logic
 const App = () => {
@@ -57,6 +58,7 @@ const App = () => {
       />
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/about" element={<About />} />
         <Route path="/events" element={<EventFeed />} />
         <Route path="/events/new" element={user ? <CreateEvent /> : <Navigate to="/" />} />
         <Route path="/profile" element={user ? <ProfilePage /> : <Navigate to="/" />} />
