@@ -74,7 +74,7 @@ const Footer = () => {
             <h3 className="text-lg font-semibold mb-4">Quick Links</h3>
             <ul className="space-y-2">
               <li>
-                <a href="#" className="text-gray-400 hover:text-white transition-colors duration-200 text-sm">
+                <a href="/about" className="text-gray-400 hover:text-white transition-colors duration-200 text-sm">
                   About Us
                 </a>
               </li>
@@ -137,7 +137,7 @@ const Footer = () => {
         {/* Bottom Bar */}
         <div className="border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center">
           <p className="text-gray-400 text-sm mb-4 md:mb-0">
-            © 2025 Vibely. All rights reserved. Made with ❤️ for the community.
+            © 2026 Vibely. All rights reserved. Made with ❤️ for the community.
           </p>
           <div className="flex flex-col items-end space-y-3">
             {user && (
@@ -148,7 +148,7 @@ const Footer = () => {
                 Create Your Event
               </button>
             )}
-           
+
           </div>
         </div>
       </div>
